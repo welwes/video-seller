@@ -1,0 +1,41 @@
+services:
+  bot:
+    build: .
+    command: python -m app.bot.main
+    env_file: .env
+    volumes:
+      - ./data:/app/data
+      - ./config.yml:/app/config.yml:ro
+    restart: unless-stopped
+
+  web:
+    build: .
+    command: uvicorn app.web.main:app --host 0.0.0.0 --port 8080
+    env_file: .env
+    volumes:
+      - ./data:/app/data
+      - ./config.yml:/app/config.yml:ro
+    ports:
+      - "127.0.0.1:8080:8080"
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2
+    profiles: ["proxy"]
+    depends_on:
+      - web
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      - DOMAIN=${DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:
