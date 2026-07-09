@@ -89,7 +89,7 @@ FastAPI + uvicorn, aiohttp, Jinja2, segno.
 ## Установка через Docker Compose
 
 ```bash
-git clone <URL этого репозитория> vpn-shop
+git clone https://github.com/welwes/video-seller.git vpn-shop
 cd vpn-shop
 
 # 1. Секреты
@@ -158,7 +158,7 @@ docker compose up -d --build
 ```bash
 # Пользователь и код
 sudo useradd -r -m -d /opt/vpn-shop -s /usr/sbin/nologin vpnshop
-sudo -u vpnshop git clone <URL этого репозитория> /opt/vpn-shop/app
+sudo -u vpnshop git clone https://github.com/welwes/video-seller.git /opt/vpn-shop/app
 cd /opt/vpn-shop/app
 
 # Окружение

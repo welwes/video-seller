@@ -74,7 +74,7 @@ ping sub.вашдомен.com
 
 ```bash
 cd /opt
-git clone <url-репозитория> vpn-shop
+git clone https://github.com/welwes/video-seller.git vpn-shop
 cd vpn-shop
 ```
 
