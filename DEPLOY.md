@@ -8,10 +8,64 @@
 - VPS (1 vCPU / 1 ГБ RAM хватает) и root-доступ по SSH: IP, пароль или ключ.
 - Домен для страницы подписки (любой, хоть самый дешёвый).
 - Работающий VLESS-сервер, установленный по [доке vlesshelp](https://vlesshelp.h1cloud.net/).
-  От него нужны три вещи: адрес API (`https://IP:API_PORT`), API-токен и адрес sub-порта (`https://IP:SUB_PORT`).
+  От него нужны три вещи: адрес API (`https://IP:API_PORT`), API-токен и адрес sub-порта
+  (`https://IP:SUB_PORT`) — как их взять, [ниже](#0-данные-vless-сервера-api-и-sub).
 - Токен бота от [@BotFather](https://t.me/BotFather) (`/newbot`).
 - Свой Telegram ID (пишем [@userinfobot](https://t.me/userinfobot) — он ответит числом).
 - Для приёма крипты — токен Crypto Pay: [@CryptoBot](https://t.me/CryptoBot) → Crypto Pay → Create App.
+
+## 0. Данные VLESS-сервера (API и sub)
+
+Все команды вводятся в консоли VLESS-сервера (там, где ставили vlesshelp).
+
+Смотрим, какие порты выделены (API и sub вешаются только на выделенные порты):
+
+```
+vpn ports
+```
+
+Включаем API на свободном порту (номер — ваш, из списка выше):
+
+```
+vpn api 25626
+```
+
+Берём API-токен (он же лежит в `api_token.txt` в рабочей папке сервера):
+
+```
+vpn api token
+```
+
+Включаем сервер подписок на втором свободном порту:
+
+```
+vpn sub 25627
+```
+
+Проверяем, что оба сервиса живы:
+
+```
+vpn api status
+vpn sub status
+```
+
+И контрольная проверка снаружи — с ПК или с VPS (`-k`, потому что сертификат самоподписанный):
+
+```bash
+curl -k https://IP_VLESS:25626/api/health
+curl -k -H "Authorization: Bearer ТОКЕН" https://IP_VLESS:25626/api/status
+```
+
+Первая команда отвечает без токена, вторая показывает имя ноды и число клиентов.
+Если обе ответили — записываем себе три значения, они пойдут в `config.yml` на шаге 6:
+
+| Что | Откуда | Куда в config.yml |
+|-----|--------|-------------------|
+| `https://IP_VLESS:25626` | порт из `vpn api` | `api_url` |
+| токен | `vpn api token` | `api_token` |
+| `https://IP_VLESS:25627` | порт из `vpn sub` | `sub_url` |
+
+Опционально: `vpn sub name МойVPN` — имя подписки, которое клиенты увидят в приложениях.
 
 ## 1. Заходим на VPS и обновляемся
 
@@ -107,7 +161,7 @@ nano .env
 Дальше `nano config.yml`:
 
 - `shop_name`, `support_url` — название и ссылка на поддержку;
-- в `servers` — данные своего VLESS-сервера: `api_url`, `api_token`, `sub_url`
+- в `servers` — данные своего VLESS-сервера из шага 0: `api_url`, `api_token`, `sub_url`
   (`verify_ssl: false` оставить — сертификат там самоподписанный);
 - `plans` — свои тарифы и цены;
 - `trial`, `referral_percent`, `topup_amounts` — по вкусу.
