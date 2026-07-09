@@ -1,0 +1,10 @@
+aiogram>=3.15
+SQLAlchemy>=2.0
+aiosqlite
+aiohttp
+fastapi
+uvicorn[standard]
+jinja2
+segno
+PyYAML
+python-dotenv
