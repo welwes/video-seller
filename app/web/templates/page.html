@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#0b0e13">
+  <title>{{ shop_name }}</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body data-suburl="{{ sub_url if not not_found else '' }}" data-shop="{{ shop_name }}">
+<div class="glow" aria-hidden="true"></div>
+<div class="page">
+
+  <header class="top">
+    <div class="brand">{{ shop_name }}</div>
+    {% if not not_found %}
+    <div class="pill {{ 'pill-ok' if active else 'pill-bad' }}">
+      <span class="dot"></span>
+      {% if active %}Активна{% if days_left is not none %} · {{ days_left }} дн.{% endif %}{% else %}Истекла{% endif %}
+    </div>
+    {% endif %}
+  </header>
+
+  {% if not_found %}
+
+  <section class="card nf">
+    <h1>Подписка не найдена</h1>
+    <p class="nf-text">Проверьте, что ссылка скопирована полностью, или напишите нам — поможем разобраться.</p>
+    {% if support_url %}
+    <a class="btn btn-primary" href="{{ support_url }}" target="_blank" rel="noopener">Написать в поддержку</a>
+    {% endif %}
+  </section>
+
+  {% else %}
+
+  <section class="card hero">
+    {% if days_left is not none %}
+    <div class="overline">Осталось</div>
+    <div class="hero-line">
+      <span class="hero-num mono {{ '' if active else 'num-bad' }}">{{ days_left }}</span>
+      <span class="hero-unit">{{ days_word }}</span>
+    </div>
+    {% if not active %}<div class="hero-note note-bad">Срок действия подписки закончился — продлите её в боте.</div>{% endif %}
+    {% else %}
+    <div class="overline">Статус</div>
+    <div class="hero-line"><span class="hero-num-text">Подписка активна</span></div>
+    {% endif %}
+
+    <div class="rows">
+      {% if expires_str %}
+      <div class="row">
+        <span class="row-label">Действует до</span>
+        <span class="row-value mono">{{ expires_str }} МСК</span>
+      </div>
+      {% endif %}
+      {% if devices_str %}
+      <div class="row">
+        <span class="row-label">Устройства</span>
+        <span class="row-value">{{ devices_str }}</span>
+      </div>
+      {% endif %}
+      {% if name_mask %}
+      <div class="row">
+        <span class="row-label">Пользователь</span>
+        <span class="row-value mono">{{ name_mask }}</span>
+      </div>
+      {% endif %}
+      {% if traffic %}
+      <div class="row row-traffic">
+        <div class="traffic-head">
+          <span class="row-label">Трафик</span>
+          <span class="row-value">
+            {% if traffic.mode == 'bar' %}
+              <span class="mono">{{ traffic.used }}</span> из <span class="mono">{{ traffic.limit }}</span> ГБ
+            {% elif traffic.mode == 'unlimited_used' %}
+              <span class="mono">{{ traffic.used }}</span> ГБ · Безлимит
+            {% elif traffic.mode == 'limit_only' %}
+              до <span class="mono">{{ traffic.limit }}</span> ГБ
+            {% else %}
+              Безлимит
+            {% endif %}
+          </span>
+        </div>
+        {% if traffic.mode == 'bar' %}
+        <div class="bar" role="progressbar" aria-valuenow="{{ traffic.percent }}" aria-valuemin="0" aria-valuemax="100">
+          <div class="bar-fill {{ 'bar-hot' if traffic.percent >= 90 else '' }}" style="width: {{ traffic.percent }}%"></div>
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Подключение</h2>
+    <p class="hint">Это ваша персональная ссылка-подписка. Добавьте её в приложение — сервера появятся автоматически.</p>
+    <div class="linkrow">
+      <input class="link-input mono" id="subUrl" type="text" readonly value="{{ sub_url }}" aria-label="Ссылка-подписка">
+      <button class="btn btn-ghost btn-copy" type="button" data-copy>Копировать</button>
+    </div>
+    <button class="qr-toggle" type="button" id="qrToggle" aria-expanded="false" aria-controls="qrBox">Показать QR-код</button>
+    <div class="qr hidden" id="qrBox">
+      <div class="qr-tile">
+        <img src="{{ qr_data_uri }}" alt="QR-код ссылки-подписки" width="176" height="176">
+      </div>
+      <p class="qr-hint">Отсканируйте камерой или из приложения на другом устройстве</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Приложения</h2>
+    <div class="tabs" role="tablist" aria-label="Платформа">
+      <button class="tab" type="button" role="tab" data-tab="ios">iOS</button>
+      <button class="tab" type="button" role="tab" data-tab="android">Android</button>
+      <button class="tab" type="button" role="tab" data-tab="windows">Windows</button>
+      <button class="tab" type="button" role="tab" data-tab="macos">macOS</button>
+      <button class="tab" type="button" role="tab" data-tab="tv">TV</button>
+    </div>
+
+    <div class="tab-panel" data-panel="ios" role="tabpanel">
+      <ol class="steps">
+        <li>
+          <div class="step-title">Скачайте приложение</div>
+          <div class="btns">
+            <a class="btn btn-ghost" href="https://apps.apple.com/app/happ-proxy-utility/id6504287215" target="_blank" rel="noopener">Happ · App Store</a>
+            <a class="btn btn-ghost" href="https://apps.apple.com/app/streisand/id6450534064" target="_blank" rel="noopener">Streisand · App Store</a>
+            <a class="btn btn-ghost" href="https://apps.apple.com/app/shadowrocket/id932747118" target="_blank" rel="noopener">Shadowrocket · App Store</a>
+            <a class="btn btn-ghost" href="https://apps.apple.com/app/v2raytun/id6476628951" target="_blank" rel="noopener">v2RayTun · App Store</a>
+          </div>
+        </li>
+        <li>
+          <div class="step-title">Добавьте подписку</div>
+          <p class="step-note">Нажмите кнопку — подписка добавится автоматически.</p>
+          <div class="btns">
+            <a class="btn btn-primary" data-deeplink="happ" href="#">Добавить в Happ</a>
+            <a class="btn btn-ghost" data-deeplink="streisand" href="#">В Streisand</a>
+            <a class="btn btn-ghost" data-deeplink="shadowrocket" href="#">В Shadowrocket</a>
+            <a class="btn btn-ghost" data-deeplink="v2raytun" href="#">В v2RayTun</a>
+          </div>
+        </li>
+        <li>
+          <div class="step-title">Подключитесь</div>
+          <p class="step-note">Выберите сервер в приложении и нажмите кнопку подключения.</p>
+        </li>
+      </ol>
+    </div>
+
+    <div class="tab-panel" data-panel="android" role="tabpanel">
+      <ol class="steps">
+        <li>
+          <div class="step-title">Скачайте приложение</div>
+          <div class="btns">
+            <a class="btn btn-ghost" href="https://play.google.com/store/apps/details?id=com.happproxy" target="_blank" rel="noopener">Happ · Google Play</a>
+            <a class="btn btn-ghost" href="https://github.com/Happ-proxy/happ-android/releases/latest" target="_blank" rel="noopener">Happ · APK</a>
+            <a class="btn btn-ghost" href="https://play.google.com/store/apps/details?id=com.v2raytun.android" target="_blank" rel="noopener">v2rayTun · Google Play</a>
+            <a class="btn btn-ghost" href="https://play.google.com/store/apps/details?id=app.hiddify.com" target="_blank" rel="noopener">Hiddify · Google Play</a>
+            <a class="btn btn-ghost" href="https://github.com/MatsuriDayo/NekoBoxForAndroid/releases/latest" target="_blank" rel="noopener">NekoBox · GitHub</a>
+          </div>
+        </li>
+        <li>
+          <div class="step-title">Добавьте подписку</div>
+          <p class="step-note">Нажмите кнопку — подписка добавится автоматически.</p>
+          <div class="btns">
+            <a class="btn btn-primary" data-deeplink="happ" href="#">Добавить в Happ</a>
+            <a class="btn btn-ghost" data-deeplink="v2raytun" href="#">В v2rayTun</a>
+            <a class="btn btn-ghost" data-deeplink="hiddify" href="#">В Hiddify</a>
+            <button class="btn btn-ghost" type="button" data-copy>NekoBox · скопировать ссылку</button>
+          </div>
+        </li>
+        <li>
+          <div class="step-title">Подключитесь</div>
+          <p class="step-note">Выберите сервер в приложении и нажмите кнопку подключения.</p>
+        </li>
+      </ol>
+    </div>
+
+    <div class="tab-panel" data-panel="windows" role="tabpanel">
+      <ol class="steps">
+        <li>
+          <div class="step-title">Скачайте приложение</div>
+          <div class="btns">
+            <a class="btn btn-ghost" href="https://github.com/hiddify/hiddify-app/releases/latest" target="_blank" rel="noopener">Hiddify · GitHub</a>
+            <a class="btn btn-ghost" href="https://github.com/2dust/v2rayN/releases/latest" target="_blank" rel="noopener">v2rayN · GitHub</a>
+            <a class="btn btn-ghost" href="https://github.com/chen08209/FlClash/releases/latest" target="_blank" rel="noopener">FlClash · GitHub</a>
+          </div>
+        </li>
+        <li>
+          <div class="step-title">Добавьте подписку</div>
+          <p class="step-note">Нажмите кнопку — подписка добавится автоматически. Для v2rayN скопируйте ссылку и вставьте её в разделе «Подписки».</p>
+          <div class="btns">
+            <a class="btn btn-primary" data-deeplink="hiddify" href="#">Добавить в Hiddify</a>
+            <a class="btn btn-ghost" data-deeplink="flclash" href="#">В FlClash</a>
+            <button class="btn btn-ghost" type="button" data-copy>v2rayN · скопировать ссылку</button>
+          </div>
+        </li>
+        <li>
+          <div class="step-title">Подключитесь</div>
+          <p class="step-note">Выберите сервер в приложении и нажмите кнопку подключения.</p>
+        </li>
+      </ol>
+    </div>
+
+    <div class="tab-panel" data-panel="macos" role="tabpanel">
+      <ol class="steps">
+        <li>
+          <div class="step-title">Скачайте приложение</div>
+          <div class="btns">
+            <a class="btn btn-ghost" href="https://apps.apple.com/app/happ-proxy-utility/id6504287215" target="_blank" rel="noopener">Happ · App Store</a>
+            <a class="btn btn-ghost" href="https://github.com/hiddify/hiddify-app/releases/latest" target="_blank" rel="noopener">Hiddify · GitHub</a>
+            <a class="btn btn-ghost" href="https://apps.apple.com/app/foxray/id6448898396" target="_blank" rel="noopener">FoXray · App Store</a>
+          </div>
+        </li>
+        <li>
+          <div class="step-title">Добавьте подписку</div>
+          <p class="step-note">Нажмите кнопку — подписка добавится автоматически.</p>
+          <div class="btns">
+            <a class="btn btn-primary" data-deeplink="happ" href="#">Добавить в Happ</a>
+            <a class="btn btn-ghost" data-deeplink="hiddify" href="#">В Hiddify</a>
+            <a class="btn btn-ghost" data-deeplink="foxray" href="#">В FoXray</a>
+          </div>
+        </li>
+        <li>
+          <div class="step-title">Подключитесь</div>
+          <p class="step-note">Выберите сервер в приложении и нажмите кнопку подключения.</p>
+        </li>
+      </ol>
+    </div>
+
+    <div class="tab-panel" data-panel="tv" role="tabpanel">
+      <ol class="steps">
+        <li>
+          <div class="step-title">Скачайте приложение</div>
+          <div class="btns">
+            <a class="btn btn-ghost" href="https://play.google.com/store/apps/details?id=com.happproxy" target="_blank" rel="noopener">Happ · Google Play (Android TV)</a>
+          </div>
+        </li>
+        <li>
+          <div class="step-title">Добавьте подписку</div>
+          <p class="step-note">Скопируйте ссылку и вставьте её в Happ на телевизоре — или отсканируйте QR-код из раздела «Подключение».</p>
+          <div class="btns">
+            <button class="btn btn-primary" type="button" data-copy>Скопировать ссылку</button>
+          </div>
+        </li>
+        <li>
+          <div class="step-title">Подключитесь</div>
+          <p class="step-note">Выберите сервер в приложении и нажмите кнопку подключения.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  {% endif %}
+
+  <footer class="foot">
+    <span>{{ shop_name }}</span>
+    {% if support_url %}
+    <a href="{{ support_url }}" target="_blank" rel="noopener">Поддержка</a>
+    {% endif %}
+  </footer>
+
+</div>
+<script src="/static/app.js" defer></script>
+</body>
+</html>
